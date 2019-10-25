@@ -53,10 +53,12 @@ spec:
             httpGet:
               path: /healthz
               port: 8443
+              scheme: HTTPS
           readinessProbe:
             httpGet:
               path: /healthz
               port: 8443
+              scheme: HTTPS
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
