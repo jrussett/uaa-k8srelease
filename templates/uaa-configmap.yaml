@@ -151,4 +151,10 @@ data:
 
     jwt:
       token:
-        signing-key: tokenKey
+        policy: # TODO: extract settable variables!
+          activeKeyId: key-1
+          keys:
+            key-1:
+              signingKey: |
+                -----BEGIN RSA PRIVATE KEY-----
+                -----END RSA PRIVATE KEY-----
