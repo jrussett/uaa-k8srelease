@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: uaa
+  namespace: {{ .Release.Namespace }}
 data:
   uaa.yml: |
     scim:
@@ -67,14 +68,17 @@ data:
           id: admin
           secret: {{ .Values.admin_client_secret }}
 
-    # TODO: we should probably change the issuer URI
     issuer:
-      uri: http://localhost:8080/uaa
+      uri: https://uaa.{{ .Values.system_domain }}
+
+    zones:
+      internal:
+        hostnames:
+        - uaa.{{ .Release.Namespace }}.svc.cluster.local
 
     login:
-      # TODO: we should maybe change this?
-      url: http://localhost:8080/uaa
-      entityBaseURL: http://localhost:8080/uaa
+      url: https://login.{{ .Values.system_domain }}
+      entityBaseURL: https://uaa.{{ .Values.system_domain }}
       entityID: cloudfoundry-saml-login
       saml:
         nameID: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'
@@ -123,15 +127,14 @@ data:
         RpuRBwn3Ei+jCRouxTbzKPsuCVB+1sNyxMTXzf0=
         -----END CERTIFICATE-----
 
-    # TODO: we probably need to change these URLs
     uaa:
-      url: http://localhost:8080/uaa
+      url: https://uaa.{{ .Values.system_domain }}
       token:
-        url: http://localhost:8080/uaa/oauth/token
+        url: https://uaa.{{ .Values.system_domain }}/oauth/token
       approvals:
-        url: http://localhost:8080/uaa/approvals
+        url: https://uaa.{{ .Values.system_domain }}/approvals
       login:
-        url: http://localhost:8080/uaa/authenticate
+        url: https://uaa.{{ .Values.system_domain }}/authenticate
       limitedFunctionality:
         enabled: false
         whitelist:
@@ -166,7 +169,8 @@ data:
       active_key_label: TODO
       encryption_keys:
       - label: TODO
-        passphrase: TODO
+        # NOTE: UAA requires encryption keys to be of length > 8
+        passphrase: TODOTODOTODO
 
     LOGIN_SECRET: TODO
 

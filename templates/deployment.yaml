@@ -1,9 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "uaa-k8srelease.fullname" . }}
-  annotations:
-    checksum/config: {{ include (print $.Template.BasePath "/uaa-configmap.yaml") . | sha256sum }}
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
   labels:
 {{ include "uaa-k8srelease.labels" . | indent 4 }}
 spec:
@@ -48,17 +47,14 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8443
+            - containerPort: 8080
           livenessProbe:
             initialDelaySeconds: 3600
             httpGet:
               path: /healthz
-              port: 8443
-              scheme: HTTPS
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 8443
-              scheme: HTTPS
+              port: 8080
+              scheme: HTTP
+          # TODO: put back readiness probe
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -69,6 +65,9 @@ spec:
             mountPath: /var/run/secrets
           - name: logs
             mountPath: /workspace/logs
+          - name: tomcat-config
+            mountPath: /layers/org.cloudfoundry.identity.tomcat/catalina-base/conf/server.xml
+            subPath: server.xml
           env:
             - name: CLOUDFOUNDRY_CONFIG_PATH
               value: /workspace
@@ -87,6 +86,9 @@ spec:
             name: uaa
         - name: logs
           emptyDir: {}
+        - name: tomcat-config
+          configMap:
+            name: uaa-tomcat-config
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
