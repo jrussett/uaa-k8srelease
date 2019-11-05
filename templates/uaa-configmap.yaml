@@ -6,13 +6,12 @@ metadata:
 data:
   uaa.yml: |
     scim:
+      users:
+      - admin|{{ .Values.cf_admin_password }}|admin@admin.tld|first|last|clients.read,cloud_controller.admin,doppler.firehose,network.admin,openid,routing.router_groups.read,routing.router_groups.write,scim.read,scim.write|uaa
       groups:
-        zones.read: Read identity zones
-        zones.write: Create and update identity zones
-        idps.read: Retrieve identity providers
-        idps.write: Create and update identity providers
-        clients.admin: Create, modify and delete OAuth clients
-        clients.write: Create and modify OAuth clients
+        zones.read: Read identity zones zones.write: Create and update identity zones
+        idps.read: Retrieve identity providers idps.write: Create and update identity providers
+        clients.admin: Create, modify and delete OAuth clients clients.write: Create and modify OAuth clients
         clients.read: Read information about OAuth clients
         clients.secret: Change the password of an OAuth client
         scim.write: Create, modify and delete SCIM entities, i.e. users and groups
